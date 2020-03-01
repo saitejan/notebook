@@ -45,13 +45,13 @@ func main() {
 	})
 
 	router.Use(static.Serve("/", static.LocalFile("./web", true)))
-
-	router.POST("/api/users", userController.CreateUser)
-	router.GET("/api/users", userController.GetUsers)
-	router.GET("/api/users/:id", userController.GetUserByID)
-	router.GET("/api/users/:id/:id1", userController.GetUserByNameAndNumber)
-	router.PUT("/api/users/:id", userController.UpdateUserForID)
-	router.DELETE("/api/users/:id", userController.DeleteUserForID)
+	router.POST("/api/login", userController.Login)
+	router.POST("/api/users", controllers.HandlerF(), userController.CreateUser)
+	router.GET("/api/users", controllers.HandlerF(), userController.GetUsers)
+	router.GET("/api/users/:id", controllers.HandlerF(), userController.GetUserByID)
+	router.GET("/api/users/:id/:id1", controllers.HandlerF(), userController.GetUserByNameAndNumber)
+	router.PUT("/api/users/:id", controllers.HandlerF(), userController.UpdateUserForID)
+	router.DELETE("/api/users/:id", controllers.HandlerF(), userController.DeleteUserForID)
 
 	port := os.Getenv("PORT")
 	if port == "" {

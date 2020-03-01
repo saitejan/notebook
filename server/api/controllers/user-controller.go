@@ -16,6 +16,12 @@ type UserController struct {
 	userRepository *repositories.UserRepository
 }
 
+// Credentials struct
+type Credentials struct {
+	Password string `json:"password"`
+	Username string `json:"username"`
+}
+
 // Init method
 func (c *UserController) Init(db *sql.DB) {
 	c.userRepository = &repositories.UserRepository{}
@@ -179,5 +185,41 @@ func (c *UserController) DeleteUserForID(ctx *gin.Context) {
 
 	ctx.JSON(200, gin.H{
 		"message": fmt.Sprintf("%d deleted", id),
+	})
+}
+
+func (c *UserController) Login(ctx *gin.Context) {
+	var users = map[string]string{
+		"supersai":   "lakshmisat",
+		"saitejan11": "saiTEja",
+	}
+	role := "user"
+
+	var user Credentials
+	ctx.BindJSON(&user)
+
+	_, ok := users[user.Username]
+	if ok {
+		if users[user.Username] == user.Password {
+			role = "admin"
+			ctx.JSON(200, gin.H{
+				"token": "seitestokecratejan",
+				"role":  role,
+			})
+			return
+		}
+	}
+
+	ussr, err := c.userRepository.GetUserByNameAndNumber(user.Username, user.Password)
+	if err != nil {
+		ctx.JSON(400, gin.H{
+			"message": "Wrong Credentials",
+		})
+		return
+	}
+
+	ctx.JSON(200, gin.H{
+		"token": ussr.Name + ",?," + ussr.Number,
+		"role":  role,
 	})
 }

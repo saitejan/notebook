@@ -52,7 +52,7 @@ func (repo *UserRepository) CreateUser(user models.User) (models.User, error) {
 // GetAllUsers method
 func (repo *UserRepository) GetAllUsers() ([]models.User, error) {
 	query := `
-    select *
+    select id,name, number,amount,transactions
     from users`
 	rows, err := repo.db.Query(query)
 	if err != nil {
@@ -65,23 +65,26 @@ func (repo *UserRepository) GetAllUsers() ([]models.User, error) {
 // GetUserByNameAndNumber method
 func (repo *UserRepository) GetUserByNameAndNumber(name, number string) (models.User, error) {
 	query := `
-    select *
+    select id,name, number,amount,transactions
     from users
     where number = $2 and name = $1
   `
 	row := repo.db.QueryRow(query, name, number)
 	var user models.User
-	err := row.Scan(&user.ID, &user.Name, &user.Number, &user.Amount, &user.Transactions)
+	var trans string
+	err := row.Scan(&user.ID, &user.Name, &user.Number, &user.Amount, &trans)
 	if err != nil {
 		return models.User{}, err
 	}
+	transBytes := []byte(trans)
+	_ = json.Unmarshal(transBytes, &user.Transactions)
 	return user, nil
 }
 
 // GetUserByID method
 func (repo *UserRepository) GetUserByID(id int64) (models.User, error) {
 	query := `
-    select *
+    select id,name, number,amount,transactions
     from users
     where id= $1
   `
