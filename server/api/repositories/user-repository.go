@@ -27,11 +27,11 @@ func (repo *UserRepository) Init(db *sql.DB) {
 
 }
 
-// CreateTask method
-func (repo *UserRepository) CreateTask(task models.User) (models.User, error) {
-	trns, er := json.Marshal(task.Transactions)
+// CreateUser method
+func (repo *UserRepository) CreateUser(user models.User) (models.User, error) {
+	trns, er := json.Marshal(user.Transactions)
 	if er != nil {
-		return task, er
+		return user, er
 	}
 	tr := string(trns)
 	statement := `
@@ -40,17 +40,17 @@ func (repo *UserRepository) CreateTask(task models.User) (models.User, error) {
     returning id
   `
 	var id int64
-	err := repo.db.QueryRow(statement, task.Name, task.Number, task.Amount, tr).Scan(&id)
+	err := repo.db.QueryRow(statement, user.Name, user.Number, user.Amount, tr).Scan(&id)
 	if err != nil {
-		return task, err
+		return user, err
 	}
-	createdTask := task
-	createdTask.ID = id
-	return createdTask, nil
+	createdUser := user
+	createdUser.ID = id
+	return createdUser, nil
 }
 
-// GetAllTasks method
-func (repo *UserRepository) GetAllTasks() ([]models.User, error) {
+// GetAllUsers method
+func (repo *UserRepository) GetAllUsers() ([]models.User, error) {
 	query := `
     select *
     from users`
@@ -59,47 +59,47 @@ func (repo *UserRepository) GetAllTasks() ([]models.User, error) {
 		return nil, err
 	}
 	defer rows.Close()
-	return getTasksFromRows(rows)
+	return getUsersFromRows(rows)
 }
 
-// GetTaskByNameAndNumber method
-func (repo *UserRepository) GetTaskByNameAndNumber(name, number string) (models.User, error) {
+// GetUserByNameAndNumber method
+func (repo *UserRepository) GetUserByNameAndNumber(name, number string) (models.User, error) {
 	query := `
     select *
     from users
     where number = $2 and name = $1
   `
 	row := repo.db.QueryRow(query, name, number)
-	var task models.User
-	err := row.Scan(&task.ID, &task.Name, &task.Number, &task.Amount, &task.Transactions)
+	var user models.User
+	err := row.Scan(&user.ID, &user.Name, &user.Number, &user.Amount, &user.Transactions)
 	if err != nil {
 		return models.User{}, err
 	}
-	return task, nil
+	return user, nil
 }
 
-// GetTaskByID method
-func (repo *UserRepository) GetTaskByID(id int64) (models.User, error) {
+// GetUserByID method
+func (repo *UserRepository) GetUserByID(id int64) (models.User, error) {
 	query := `
     select *
     from users
     where id= $1
   `
 	row := repo.db.QueryRow(query, id)
-	var task models.User
+	var user models.User
 	var trans string
-	err := row.Scan(&task.ID, &task.Name, &task.Number, &task.Amount, &trans)
+	err := row.Scan(&user.ID, &user.Name, &user.Number, &user.Amount, &trans)
 	if err != nil {
 		return models.User{}, err
 	}
 	transBytes := []byte(trans)
-	_ = json.Unmarshal(transBytes, &task.Transactions)
-	return task, nil
+	_ = json.Unmarshal(transBytes, &user.Transactions)
+	return user, nil
 }
 
-// UpdateTask method
-func (repo *UserRepository) UpdateTask(id int64, task models.User) error {
-	trns, er := json.Marshal(task.Transactions)
+// UpdateUser method
+func (repo *UserRepository) UpdateUser(id int64, user models.User) error {
+	trns, er := json.Marshal(user.Transactions)
 	if er != nil {
 		return er
 	}
@@ -127,8 +127,8 @@ func (repo *UserRepository) UpdateTask(id int64, task models.User) error {
 	return nil
 }
 
-// DeleteTask method
-func (repo *UserRepository) DeleteTask(id int64) error {
+// DeleteUser method
+func (repo *UserRepository) DeleteUser(id int64) error {
 	query := `delete from users where id=$1`
 	res, err := repo.db.Exec(query, id)
 	if err != nil {
@@ -146,18 +146,18 @@ func (repo *UserRepository) DeleteTask(id int64) error {
 	return nil
 }
 
-func getTasksFromRows(rows *sql.Rows) ([]models.User, error) {
-	tasks := []models.User{}
+func getUsersFromRows(rows *sql.Rows) ([]models.User, error) {
+	users := []models.User{}
 	for rows.Next() {
-		var task models.User
+		var user models.User
 		var trans string
-		err := rows.Scan(&task.ID, &task.Name, &task.Number, &task.Amount, &trans)
+		err := rows.Scan(&user.ID, &user.Name, &user.Number, &user.Amount, &trans)
 		if err != nil {
 			return nil, err
 		}
 		transBytes := []byte(trans)
-		_ = json.Unmarshal(transBytes, &task.Transactions)
-		tasks = append(tasks, task)
+		_ = json.Unmarshal(transBytes, &user.Transactions)
+		users = append(users, user)
 	}
-	return tasks, nil
+	return users, nil
 }

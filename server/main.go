@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/gin-gonic/contrib/static"
 	"github.com/gin-gonic/gin"
 	_ "github.com/lib/pq"
 
@@ -21,8 +22,8 @@ func main() {
 	}
 	defer db.Close()
 
-	taskController := controllers.TaskController{}
-	taskController.Init(db)
+	userController := controllers.UserController{}
+	userController.Init(db)
 
 	router.Use(func(ctx *gin.Context) {
 		if !util.Contains([]string{"POST", "PUT", "PATCH"}, ctx.Request.Method) {
@@ -43,12 +44,14 @@ func main() {
 		}
 	})
 
-	router.POST("/tasks", taskController.CreateTask)
-	router.GET("/tasks", taskController.GetTasks)
-	router.GET("/tasks/:id", taskController.GetTaskByID)
-	router.GET("/tasks/:id/:id1", taskController.GetTaskByNameAndNumber)
-	router.PUT("/tasks/:id", taskController.UpdateTaskForID)
-	router.DELETE("/tasks/:id", taskController.DeleteTaskForID)
+	router.Use(static.Serve("/", static.LocalFile("./web", true)))
+
+	router.POST("/api/users", userController.CreateUser)
+	router.GET("/api/users", userController.GetUsers)
+	router.GET("/api/users/:id", userController.GetUserByID)
+	router.GET("/api/users/:id/:id1", userController.GetUserByNameAndNumber)
+	router.PUT("/api/users/:id", userController.UpdateUserForID)
+	router.DELETE("/api/users/:id", userController.DeleteUserForID)
 
 	port := os.Getenv("PORT")
 	if port == "" {

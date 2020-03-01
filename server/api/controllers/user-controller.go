@@ -11,22 +11,22 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// TaskController struct
-type TaskController struct {
+// UserController struct
+type UserController struct {
 	userRepository *repositories.UserRepository
 }
 
 // Init method
-func (c *TaskController) Init(db *sql.DB) {
+func (c *UserController) Init(db *sql.DB) {
 	c.userRepository = &repositories.UserRepository{}
 	c.userRepository.Init(db)
 }
 
-// CreateTask method
-func (c *TaskController) CreateTask(ctx *gin.Context) {
-	var task models.User
-	ctx.BindJSON(&task)
-	if task.Name == "" {
+// CreateUser method
+func (c *UserController) CreateUser(ctx *gin.Context) {
+	var user models.User
+	ctx.BindJSON(&user)
+	if user.Name == "" {
 		ctx.JSON(400, gin.H{
 			"error": "name should not be empty",
 		})
@@ -40,8 +40,8 @@ func (c *TaskController) CreateTask(ctx *gin.Context) {
 	// 	return
 	// }
 	// userid := useridi.(string)
-	// task.Number = userid
-	createdTask, err := c.userRepository.CreateTask(task)
+	// user.Number = userid
+	createdUser, err := c.userRepository.CreateUser(user)
 	if err != nil {
 		log.Printf("Error: %v\n", err)
 		ctx.JSON(400, gin.H{
@@ -50,15 +50,15 @@ func (c *TaskController) CreateTask(ctx *gin.Context) {
 		return
 	}
 	ctx.JSON(201, gin.H{
-		"task": createdTask,
+		"user": createdUser,
 	})
 }
 
-// GetTasks method
-func (c *TaskController) GetTasks(ctx *gin.Context) {
-	tasks := []models.User{}
+// GetUsers method
+func (c *UserController) GetUsers(ctx *gin.Context) {
+	users := []models.User{}
 	var err error
-	tasks, err = c.userRepository.GetAllTasks()
+	users, err = c.userRepository.GetAllUsers()
 	if err != nil {
 		ctx.JSON(400, gin.H{
 			"message": err.Error(),
@@ -67,12 +67,12 @@ func (c *TaskController) GetTasks(ctx *gin.Context) {
 	}
 
 	ctx.JSON(200, gin.H{
-		"tasks": tasks,
+		"users": users,
 	})
 }
 
-// GetTaskByID method
-func (c *TaskController) GetTaskByID(ctx *gin.Context) {
+// GetUserByID method
+func (c *UserController) GetUserByID(ctx *gin.Context) {
 	idstr := ctx.Param("id")
 	id, err := strconv.ParseInt(idstr, 10, 64)
 	if err != nil {
@@ -82,7 +82,7 @@ func (c *TaskController) GetTaskByID(ctx *gin.Context) {
 		return
 	}
 
-	task, err := c.userRepository.GetTaskByID(id)
+	user, err := c.userRepository.GetUserByID(id)
 	if err != nil {
 		ctx.JSON(400, gin.H{
 			"message": err.Error(),
@@ -91,19 +91,19 @@ func (c *TaskController) GetTaskByID(ctx *gin.Context) {
 	}
 
 	ctx.JSON(200, gin.H{
-		"task": task,
+		"user": user,
 	})
 }
 
-// GetTaskByNameAndNumber method
-func (c *TaskController) GetTaskByNameAndNumber(ctx *gin.Context) {
+// GetUserByNameAndNumber method
+func (c *UserController) GetUserByNameAndNumber(ctx *gin.Context) {
 	idstr := ctx.Param("id")
 	// number := idstr.(string)
 
 	useridi := ctx.Param("id1")
 	// name := useridi.(string)
 
-	task, err := c.userRepository.GetTaskByNameAndNumber(idstr, useridi)
+	user, err := c.userRepository.GetUserByNameAndNumber(idstr, useridi)
 	if err != nil {
 		ctx.JSON(400, gin.H{
 			"message": err.Error(),
@@ -112,12 +112,12 @@ func (c *TaskController) GetTaskByNameAndNumber(ctx *gin.Context) {
 	}
 
 	ctx.JSON(200, gin.H{
-		"task": task,
+		"user": user,
 	})
 }
 
-// UpdateTaskForID method
-func (c *TaskController) UpdateTaskForID(ctx *gin.Context) {
+// UpdateUserForID method
+func (c *UserController) UpdateUserForID(ctx *gin.Context) {
 	idstr := ctx.Param("id")
 	id, err := strconv.ParseInt(idstr, 10, 64)
 	if err != nil {
@@ -127,7 +127,7 @@ func (c *TaskController) UpdateTaskForID(ctx *gin.Context) {
 		return
 	}
 
-	existingTask, err := c.userRepository.GetTaskByID(id)
+	existingUser, err := c.userRepository.GetUserByID(id)
 	if err != nil {
 		ctx.JSON(400, gin.H{
 			"message": err.Error(),
@@ -140,13 +140,13 @@ func (c *TaskController) UpdateTaskForID(ctx *gin.Context) {
 	}
 	ctx.BindJSON(&receive)
 	maxlen := 10
-	if len(existingTask.Transactions) < 10 {
-		maxlen = len(existingTask.Transactions)
+	if len(existingUser.Transactions) < 10 {
+		maxlen = len(existingUser.Transactions)
 	}
 	// var a []interface{}
 	// a = append(a, receive.Transactions)
-	existingTask.Transactions = append(receive.Transactions, existingTask.Transactions[:maxlen]...)
-	err = c.userRepository.UpdateTask(id, existingTask)
+	existingUser.Transactions = append(receive.Transactions, existingUser.Transactions[:maxlen]...)
+	err = c.userRepository.UpdateUser(id, existingUser)
 	if err != nil {
 		ctx.JSON(400, gin.H{
 			"error": err.Error(),
@@ -158,8 +158,8 @@ func (c *TaskController) UpdateTaskForID(ctx *gin.Context) {
 	})
 }
 
-// DeleteTaskForID method
-func (c *TaskController) DeleteTaskForID(ctx *gin.Context) {
+// DeleteUserForID method
+func (c *UserController) DeleteUserForID(ctx *gin.Context) {
 	idstr := ctx.Param("id")
 	id, err := strconv.ParseInt(idstr, 10, 64)
 	if err != nil {
@@ -169,7 +169,7 @@ func (c *TaskController) DeleteTaskForID(ctx *gin.Context) {
 		return
 	}
 
-	err = c.userRepository.DeleteTask(id)
+	err = c.userRepository.DeleteUser(id)
 	if err != nil {
 		ctx.JSON(400, gin.H{
 			"error": err.Error(),
