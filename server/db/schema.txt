@@ -1,0 +1,7 @@
+CREATE TABLE users (
+	id SERIAL PRIMARY KEY,
+	number VARCHAR(50) NOT NULL,
+	name VARCHAR(200) NOT NULL,
+	amount FLOAT default (0),
+	transactions jsonb NOT NULL default('[]')
+);

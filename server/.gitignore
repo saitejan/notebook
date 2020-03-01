@@ -1,0 +1,6 @@
+*.yaml
+gin-bin
+**/node_modules/
+.swp
+**/build/
+
