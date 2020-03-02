@@ -29,7 +29,7 @@ func HandlerF() gin.HandlerFunc {
 			ctx.Set("userid", authToken)
 			return
 		}
-		if ctx.Request.Method != "GET" || ctx.FullPath() != "/api/users/:id" {
+		if ctx.Request.Method != "GET" || ctx.FullPath() != "/api/users/:id/:id1" {
 			log.Printf("No Access: \n")
 			ctx.Abort()
 			ctx.Writer.WriteHeader(http.StatusUnauthorized)

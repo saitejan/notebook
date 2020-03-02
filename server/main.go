@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/contrib/static"
 	"github.com/gin-gonic/gin"
 	_ "github.com/lib/pq"
@@ -24,6 +25,21 @@ func main() {
 
 	userController := controllers.UserController{}
 	userController.Init(db)
+
+	router.Use(cors.New(cors.Config{
+		AllowMethods:     []string{"GET", "POST", "OPTIONS", "PUT"},
+		AllowHeaders:     []string{"Origin", "Content-Length", "Content-Type", "User-Agent", "Referrer", "Host", "authorization"},
+		ExposeHeaders:    []string{"Content-Length"},
+		AllowCredentials: true,
+		AllowAllOrigins:  false,
+		AllowOriginFunc: func(origin string) bool {
+			if origin == "http://localhost:3000" || origin == "https://kolluru.herokuapp.com" || origin == "https://sathvika.netlify.com" {
+				return true
+			}
+			return false
+		},
+		MaxAge: 86400,
+	}))
 
 	router.Use(func(ctx *gin.Context) {
 		if !util.Contains([]string{"POST", "PUT", "PATCH"}, ctx.Request.Method) {

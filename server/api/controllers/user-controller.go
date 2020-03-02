@@ -31,7 +31,13 @@ func (c *UserController) Init(db *sql.DB) {
 // CreateUser method
 func (c *UserController) CreateUser(ctx *gin.Context) {
 	var user models.User
-	ctx.BindJSON(&user)
+	er1 := ctx.BindJSON(&user)
+	if er1 != nil {
+		ctx.JSON(400, gin.H{
+			"error": "number should not be string",
+		})
+		return
+	}
 	if user.Name == "" {
 		ctx.JSON(400, gin.H{
 			"error": "name should not be empty",
@@ -58,6 +64,7 @@ func (c *UserController) CreateUser(ctx *gin.Context) {
 	ctx.JSON(201, gin.H{
 		"user": createdUser,
 	})
+	return
 }
 
 // GetUsers method
@@ -142,9 +149,11 @@ func (c *UserController) UpdateUserForID(ctx *gin.Context) {
 	}
 
 	var receive struct {
+		Amount       float64       `json:"amount"`
 		Transactions []interface{} `json:"transactions"`
 	}
 	ctx.BindJSON(&receive)
+	existingUser.Amount = receive.Amount
 	maxlen := 10
 	if len(existingUser.Transactions) < 10 {
 		maxlen = len(existingUser.Transactions)
