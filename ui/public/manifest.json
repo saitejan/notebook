@@ -16,6 +16,16 @@
       "src": "note128.png",
       "type": "image/png",
       "sizes": "128x128"
+    },
+    {
+      "src": "note256.png",
+      "type": "image/png",
+      "sizes": "256x256"
+    },
+    {
+      "src": "note540.png",
+      "type": "image/png",
+      "sizes": "540x540"
     }
   ],
   "start_url": ".",
