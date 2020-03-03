@@ -94,7 +94,7 @@ class Home extends Component {
         user.newval = Number(user.newval)
         if (user.newval !== 0) {
             user.amount = user.amount + user.newval
-            if (!user.transactions) user.transactions = []
+            user.transactions = []
             user.transactions.push({ time: new Date().getTime(), am: user.newval, desc: user.desc })
         }
         const response = await axios({
@@ -131,6 +131,7 @@ class Home extends Component {
     handleSubmit = async (event) => {
         event.preventDefault();
         let user = JSON.parse(JSON.stringify(this.state.user))
+        user.amount = Number(user.amount)
         if (user.amount !== 0) {
             if (!user.transactions) user.transactions = []
             user.transactions.push({ time: new Date().getTime(), am: user.amount, desc: "" })
@@ -212,7 +213,7 @@ class Home extends Component {
                             </Form.Group>
                             <Form.Group controlId="formBasicAmount">
                                 <Form.Label>Amount</Form.Label>
-                                <Form.Control type="number" value={this.state.user.amount}
+                                <Form.Control type="text" value={this.state.user.amount}
                                     onChange={e => this.changeUserState(e.target.value, 'amount')} placeholder="amount" />
                             </Form.Group>
                             <Button variant="primary" disabled={!this.validateForm()} type="submit">
