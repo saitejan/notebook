@@ -68,6 +68,7 @@ func main() {
 	router.GET("/api/users/:id/:id1", controllers.HandlerF(), userController.GetUserByNameAndNumber)
 	router.PUT("/api/users/:id", controllers.HandlerF(), userController.UpdateUserForID)
 	router.DELETE("/api/users/:id", controllers.HandlerF(), userController.DeleteUserForID)
+	router.Use(static.Serve("**", static.LocalFile("./web", true)))
 
 	port := os.Getenv("PORT")
 	if port == "" {

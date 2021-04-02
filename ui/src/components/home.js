@@ -114,7 +114,7 @@ class Home extends Component {
         });
         if (response.status === 200) {
             this.getUsers()
-            this.setState({ add: false,edit: false })
+            this.setState({ add: false,edit: false,show:false })
         }
     }
 

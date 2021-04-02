@@ -148,12 +148,15 @@ func (c *UserController) UpdateUserForID(ctx *gin.Context) {
 		return
 	}
 
-	var receive struct {
-		Amount       float64       `json:"amount"`
-		Transactions []interface{} `json:"transactions"`
-	}
+	// var receive struct {
+	// 	Amount       float64       `json:"amount"`
+	// 	Transactions []interface{} `json:"transactions"`
+	// }
+	var receive models.User
 	ctx.BindJSON(&receive)
 	existingUser.Amount = receive.Amount
+	existingUser.Name = receive.Name
+	existingUser.Number = receive.Number
 	maxlen := 10
 	if len(existingUser.Transactions) < 10 {
 		maxlen = len(existingUser.Transactions)
