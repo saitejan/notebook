@@ -17,12 +17,13 @@ class Home extends Component {
             users: localStorage.users ? JSON.parse(localStorage.users) : [],
             show: false,
             user: {},
-            add: false
+            add: false,
+            edit:false
         }
     }
 
     closePopup = () => {
-        this.setState({ show: false })
+        this.setState({ show: false,edit:false })
     }
 
     closeAddPopup = () => {
@@ -84,6 +85,11 @@ class Home extends Component {
         this.setState({ show: true, user: { name: "", number: "", amount: 0, transactions: [] } })
     }
 
+    Edit = (b) => {
+        this.setState({ show: true, edit: true, user: { id: b.id, name: b.name, number: b.number, amount: b.amount, newval: 0, desc: "", transactions: b.transactions } })
+    }
+
+
     Update = (b) => {
         this.setState({ add: true, user: { id: b.id, name: b.name, number: b.number, amount: b.amount, newval: 0, desc: "", transactions: b.transactions } })
     }
@@ -108,7 +114,7 @@ class Home extends Component {
         });
         if (response.status === 200) {
             this.getUsers()
-            this.setState({ add: false })
+            this.setState({ add: false,edit: false })
         }
     }
 
@@ -175,6 +181,7 @@ class Home extends Component {
                                                 <Card.Text>
                                                     Amount: {board.amount}
                                                 </Card.Text>
+                                                <Button onClick={() => this.Edit(board)} variant="secondary">Edit</Button>
                                                 <Button onClick={() => this.Update(board)} variant="primary">Update</Button>
                                                 <Button onClick={() => this.changeD(board)} variant="info">Transactions</Button>
                                             </Card.Body>
@@ -197,11 +204,13 @@ class Home extends Component {
                 >
                     <Modal.Header closeButton>
                         <Modal.Title id="contained-modal-title-vcenter">
-                            Add User
+                            {this.state.edit ? 'Edit':'Add'} User
                         </Modal.Title>
                     </Modal.Header>
                     <Modal.Body>
-                        <Form onSubmit={this.handleSubmit}>
+                        <Form onSubmit={() => {
+                            return this.state.edit ? this.save() : this.handleSubmit()
+                            }}>
                             <Form.Group controlId="formBasicEmail">
                                 <Form.Label>Name</Form.Label>
                                 <Form.Control value={this.state.user.name} onChange={e => this.changeUserState(e.target.value, 'name')} type="text" placeholder="Enter name" />
