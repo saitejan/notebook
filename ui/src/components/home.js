@@ -208,8 +208,8 @@ class Home extends Component {
                         </Modal.Title>
                     </Modal.Header>
                     <Modal.Body>
-                        <Form onSubmit={() => {
-                            return this.state.edit ? this.save() : this.handleSubmit()
+                        <Form onSubmit={(e) => {
+                            return this.state.edit ? this.save(e) : this.handleSubmit(e)
                             }}>
                             <Form.Group controlId="formBasicEmail">
                                 <Form.Label>Name</Form.Label>
