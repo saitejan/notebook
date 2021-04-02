@@ -110,11 +110,11 @@ func (repo *UserRepository) UpdateUser(id int64, user models.User) error {
 	// set transactions = transactions || $2
 	query := `
     update users
-    set transactions = $2,amount = $3
+    set name= $4, number= $5,transactions = $2,amount = $3
     where id=$1
   `
 
-	res, err := repo.db.Exec(query, id, tr, user.Amount)
+	res, err := repo.db.Exec(query, id, tr, user.Amount, user.Name, user.Number)
 	if err != nil {
 		return err
 	}
