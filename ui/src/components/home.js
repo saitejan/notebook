@@ -86,7 +86,7 @@ class Home extends Component {
     }
 
     Edit = (b) => {
-        this.setState({ show: true, edit: true, user: { id: b.id, name: b.name, number: b.number, amount: b.amount, newval: 0, desc: "", transactions: b.transactions } })
+        this.setState({ show: true, edit: true, user: { id: b.id, name: b.name, number: b.number, amount: b.amount, newval: 0, desc: "", transactions: [] } })
     }
 
 
